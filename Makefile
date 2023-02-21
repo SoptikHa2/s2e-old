@@ -105,7 +105,7 @@ ifeq ($(LLVMBUILD),$(S2EBUILD))
 LLVM_SRC_URL = http://llvm.org/releases/$(LLVM_VERSION)/
 
 $(CLANG_SRC) $(COMPILER_RT_SRC) $(LLVM_SRC):
-	wget $(LLVM_SRC_URL)$@
+	wget --no-check-certificate $(LLVM_SRC_URL)$@
 
 .INTERMEDIATE: $(CLANG_SRC_DIR) $(COMPILER_RT_SRC_DIR)
 
