@@ -330,6 +330,8 @@ int ConcolicSession::endConcolicSession(S2EExecutionState *state,
 
 	HighLevelTreeNode *trace_node = interp_monitor_->getHLTreeNode(state);
 
+	llvm::sys::TimeValue time_stamp = sys::TimeValue::now();
+
 	if (is_error_path && stop_on_error_) {
 		assert(trace_node->path_counter() == 1
 				&& "How could you miss it the first time?");
@@ -339,8 +341,6 @@ int ConcolicSession::endConcolicSession(S2EExecutionState *state,
 	} else {
 		assert(trace_node->path_counter() > 0);
 	}
-
-	llvm::sys::TimeValue time_stamp = sys::TimeValue::now();
 
 	s2e()->getMessagesStream(state) << "Processing test case for "
 			<< klee::concolics(state) << '\n';
