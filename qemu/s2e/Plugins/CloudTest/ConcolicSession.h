@@ -231,6 +231,7 @@ private:
 	// Test case tracing
 	llvm::raw_ostream *cfg_tc_stream_;
 	llvm::raw_ostream *paths_tc_stream_;
+	llvm::raw_ostream *error_tc_stream_;
 	llvm::raw_ostream *all_tc_stream_;
 
 	llvm::raw_ostream *compl_feature_stream_;
