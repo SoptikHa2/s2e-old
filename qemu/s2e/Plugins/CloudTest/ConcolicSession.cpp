@@ -336,10 +336,12 @@ int ConcolicSession::endConcolicSession(S2EExecutionState *state,
 		assert(trace_node->path_counter() == 1
 				&& "How could you miss it the first time?");
 		s2e()->getMessagesStream(state) << "Error path hit!" << '\n';
-
-		dumpTestCase(state, time_stamp, time_stamp - path_time_stamp_, *error_tc_stream_);
 	} else {
 		assert(trace_node->path_counter() > 0);
+
+		// We hit an error branch (but we carry on), log test case into special file
+		s2e()->getMessagesStream(state) << "Error path hit, generating test case." << '\n';
+		dumpTestCase(state, time_stamp, time_stamp - path_time_stamp_, *error_tc_stream_);
 	}
 
 	s2e()->getMessagesStream(state) << "Processing test case for "
