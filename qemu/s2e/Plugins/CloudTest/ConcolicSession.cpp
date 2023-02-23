@@ -421,7 +421,8 @@ void ConcolicSession::dumpTestCase(S2EExecutionState *state,
 		llvm::raw_ostream &out) {
 	out << (time_stamp - start_time_stamp_).usec();
 	out << " " << hexval(starting_fork_point_->pc());
-	out << " " << starting_fork_point_->hl_node()->instruction()->filename << ":" << starting_fork_point_->hl_node()->instruction()->line;
+	out << " " << starting_fork_point_->hl_node()->instruction()->filename << ":" << 
+			starting_fork_point_->hl_node()->instruction()->function << ":" << starting_fork_point_->hl_node()->instruction()->line;
 
 	if (extra_details_) {
 		int min_dist, max_dist;
