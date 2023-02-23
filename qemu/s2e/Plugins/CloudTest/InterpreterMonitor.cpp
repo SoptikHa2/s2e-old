@@ -935,7 +935,7 @@ void InterpreterMonitor::doUpdateHLPC(S2EExecutionState *state,
 			hlpc, opcode);
 	
 	inst->filename = filename;
-	inst->function = function
+	inst->function = function;
 	inst->line = line;
 
 	active_node_ = active_node_->getOrCreateSuccessor(inst);
