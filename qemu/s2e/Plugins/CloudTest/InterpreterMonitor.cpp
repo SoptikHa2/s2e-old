@@ -56,7 +56,7 @@ namespace plugins {
 typedef struct {
 	uint32_t op_code;
 	uint32_t frame_count;
-	uint32_t frames[1];
+	uint32_t frames[2];
 	uint32_t line;
 	uint8_t filename[61];
 } __attribute__((packed)) TraceUpdate;
