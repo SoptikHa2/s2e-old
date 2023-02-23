@@ -58,7 +58,7 @@ typedef struct {
 	uint32_t frame_count;
 	uint32_t frames[1];
 	uint32_t line;
-	uint8_t filename[60];
+	uint8_t filename[61];
 } __attribute__((packed)) TraceUpdate;
 
 
