@@ -56,7 +56,10 @@ namespace plugins {
 typedef struct {
 	uint32_t op_code;
 	uint32_t frame_count;
-	uint32_t frames[1];
+	uint32_t frames[2];
+	uint32_t line;
+	uint8_t function[61];
+	uint8_t filename[61];
 } __attribute__((packed)) TraceUpdate;
 
 
@@ -879,7 +882,7 @@ unsigned int InterpreterMonitor::handleOpcodeInvocation(S2EExecutionState *state
 	HighLevelOpcode opcode = update->op_code;
 	delete [] message_buffer;
 
-	doUpdateHLPC(state, hlpc, opcode);
+	doUpdateHLPC(state, hlpc, opcode, (char *)update->filename, (char *)update->function, update->line);
 	return 0;
 }
 
@@ -924,12 +927,16 @@ void InterpreterMonitor::onStateKill(S2EExecutionState *state) {
 
 
 void InterpreterMonitor::doUpdateHLPC(S2EExecutionState *state,
-		const HighLevelPC &hlpc, HighLevelOpcode opcode) {
+		const HighLevelPC &hlpc, HighLevelOpcode opcode, std::string filename, std::string function, int line) {
 	assert(state == active_state_);
 
 	HighLevelInstruction *inst = cfg_.recordEdge(
 			active_node_->instruction()->hlpc(),
 			hlpc, opcode);
+	
+	inst->filename = filename;
+	inst->function = function
+	inst->line = line;
 
 	active_node_ = active_node_->getOrCreateSuccessor(inst);
 	active_node_->bumpPathCounter();

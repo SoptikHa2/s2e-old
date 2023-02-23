@@ -118,6 +118,7 @@ ConcolicSession::ConcolicSession(S2E* s2e_)
 	: Plugin(s2e_),
 	  cfg_tc_stream_(NULL),
 	  paths_tc_stream_(NULL),
+	  error_tc_stream_(NULL),
 	  all_tc_stream_(NULL),
 	  compl_feature_stream_(NULL),
 	  pending_feature_stream_(NULL),
@@ -161,6 +162,8 @@ ConcolicSession::~ConcolicSession() {
 		delete cfg_tc_stream_;
 	if (paths_tc_stream_ != NULL)
 		delete paths_tc_stream_;
+	if (error_tc_stream_ != NULL)
+		delete error_tc_stream_;
 	if (all_tc_stream_ != NULL)
 		delete all_tc_stream_;
 
@@ -178,6 +181,7 @@ void ConcolicSession::initialize() {
 
 	cfg_tc_stream_ = s2e()->openOutputFile("cfg_test_cases.dat");
 	paths_tc_stream_ = s2e()->openOutputFile("hl_test_cases.dat");
+	error_tc_stream_ = s2e()->openOutputFile("err_test_cases.dat");
 	all_tc_stream_ = s2e()->openOutputFile("all_test_cases.dat");
 	compl_feature_stream_ = s2e()->openOutputFile("complete_features.dat");
 	pending_feature_stream_ = s2e()->openOutputFile("pending_features.dat");
@@ -326,15 +330,21 @@ int ConcolicSession::endConcolicSession(S2EExecutionState *state,
 
 	HighLevelTreeNode *trace_node = interp_monitor_->getHLTreeNode(state);
 
+	llvm::sys::TimeValue time_stamp = sys::TimeValue::now();
+
 	if (is_error_path && stop_on_error_) {
 		assert(trace_node->path_counter() == 1
 				&& "How could you miss it the first time?");
 		s2e()->getMessagesStream(state) << "Error path hit!" << '\n';
 	} else {
 		assert(trace_node->path_counter() > 0);
-	}
 
-	llvm::sys::TimeValue time_stamp = sys::TimeValue::now();
+		if (is_error_path) {
+			// We hit an error branch (but we carry on), log test case into special file
+			s2e()->getMessagesStream(state) << "Error path hit, generating test case." << '\n';
+			dumpTestCase(state, time_stamp, time_stamp - path_time_stamp_, *error_tc_stream_);
+		}
+	}
 
 	s2e()->getMessagesStream(state) << "Processing test case for "
 			<< klee::concolics(state) << '\n';
@@ -411,6 +421,8 @@ void ConcolicSession::dumpTestCase(S2EExecutionState *state,
 		llvm::raw_ostream &out) {
 	out << (time_stamp - start_time_stamp_).usec();
 	out << " " << hexval(starting_fork_point_->pc());
+	out << " " << starting_fork_point_->hl_node()->instruction()->filename << ":" << 
+			starting_fork_point_->hl_node()->instruction()->function << ":" << starting_fork_point_->hl_node()->instruction()->line;
 
 	if (extra_details_) {
 		int min_dist, max_dist;

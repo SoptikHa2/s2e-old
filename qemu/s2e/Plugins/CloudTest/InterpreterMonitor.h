@@ -86,6 +86,9 @@ inline std::ostream& operator<<(std::ostream &os, const HighLevelPC &t) {
 class HighLevelInstruction {
 public:
 	typedef std::map<HighLevelPC, HighLevelInstruction*> AdjacencyMap;
+	std::string filename;
+	std::string function;
+	int line;
 
 	const HighLevelPC &hlpc() const {
 		return hlpc_;
@@ -125,8 +128,11 @@ public:
 	int fork_counter_;
 
 private:
-	HighLevelInstruction(const HighLevelPC &hlpc, HighLevelOpcode opcode)
-		: low_level_paths_(0),
+	HighLevelInstruction(const HighLevelPC &hlpc, HighLevelOpcode opcode, std::string filename = "", std::string function = "", int line = 0)
+		: filename(filename),
+		  function(function),
+		  line(line),
+		  low_level_paths_(0),
 		  fork_counter_(0),
 		  high_level_paths_(0),
 		  dist_to_uncovered_(0),
@@ -521,7 +527,7 @@ private:
 	sigc::connection on_state_kill_;
 
 	void doUpdateHLPC(S2EExecutionState *state, const HighLevelPC &hlpc,
-				HighLevelOpcode opcode);
+				HighLevelOpcode opcode, std::string filename, std::string function, int line);
 
 	void onStateFork(S2EExecutionState *state, const StateVector &new_states,
 			const std::vector<klee::ref<klee::Expr> > &new_conditions);
