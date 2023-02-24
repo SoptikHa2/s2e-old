@@ -377,7 +377,7 @@ int ConcolicSession::endConcolicSession(S2EExecutionState *state,
 
 	if (emptyPendingStates() || (is_error_path && stop_on_error_)) {
 		s2e()->getMessagesStream(state)
-				<< (is_error_path ? "Premature termination."
+				<< ((is_error_path && stop_on_error_) ? "Premature termination."
 						: "Exhaustive search complete.")
 			    << '\n';
 		terminateSession(state);
