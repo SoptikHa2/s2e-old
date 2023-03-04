@@ -556,7 +556,8 @@ void HighLevelTreeVisualizer::printTreeNode(HighLevelTreeNode *node, NodeType no
 	}
 
 	os() << " | opcode = " << node->instruction()->opcode()
-			<< "\\nhlpc = " << node->instruction()->hlpc() << "}\"";
+			<< "\\nhlpc = " << node->instruction()->hlpc() << "}\""
+			<< "\\nsrc = " << node->instruction()->function << ":" << node->instruction()->line << "}\"";
 	os() << "]; ";
 
 	if (!node->fork_counter()) {
