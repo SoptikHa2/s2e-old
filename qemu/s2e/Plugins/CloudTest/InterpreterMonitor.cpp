@@ -556,7 +556,7 @@ void HighLevelTreeVisualizer::printTreeNode(HighLevelTreeNode *node, NodeType no
 	}
 
 	os() << " | opcode = " << node->instruction()->opcode()
-			<< "\\nhlpc = " << node->instruction()->hlpc() << "}\""
+			<< "\\nhlpc = " << node->instruction()->hlpc()
 			<< "\\nsrc = " << node->instruction()->function << ":" << node->instruction()->line << "}\"";
 	os() << "]; ";
 
@@ -782,7 +782,8 @@ void HighLevelCFGVisualizer::printInstructionSeq(HighLevelInstruction *head,
 		size++;
 	}
 
-	os << head->hlpc() << ' ' << head->opcode();
+	os << head->hlpc() << ' ' << head->opcode() << head->filename.substr(head->filename.find_last_of('/')+1)
+		<< ':' << head->function << ':' << head->line;
 
 	if (size > 2) {
 		os << "\\n";
